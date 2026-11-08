@@ -169,7 +169,7 @@ public class MunicipalProjectVo implements Serializable {
 	// ========== 监管信息 ==========
 
 	/**
-	 * 在建 / 停工
+	 * 在建 / 中止监督 / 终止监督 / 不在监（收集表监督口径）
 	 */
 	private String buildStatus;
 
@@ -187,6 +187,83 @@ public class MunicipalProjectVo implements Serializable {
 	 * 主要风险点
 	 */
 	private String riskPoint;
+
+	// ========== 安全风险分级（收集表） ==========
+
+	/**
+	 * 工程类别（维度一），选项原文：隧道盾构类 / 桥梁高架类 / 常规市政 / 维修零星
+	 */
+	private String engineeringCategory;
+
+	/**
+	 * 危大基础信息（维度二），选项原文：存在超危大工程 / 仅危大 / 均不存在
+	 */
+	private String dangerBasicInfo;
+
+	/**
+	 * 危大工程数量
+	 */
+	private String dangerCount;
+
+	/**
+	 * 超危大工程数量
+	 */
+	private String superDangerCount;
+
+	/**
+	 * 危大工程名称
+	 */
+	private String dangerNames;
+
+	/**
+	 * 专项方案编审及专家论证：已组织 / 未组织
+	 */
+	private String specialPlanReview;
+
+	/**
+	 * 现场旁站与过程管控：已落实且与方案一致 / 未落实
+	 */
+	private String siteControlStatus;
+
+	/**
+	 * 分部分项工程验收后进入下一道工序：已组织 / 未组织
+	 */
+	private String acceptanceStatus;
+
+	/**
+	 * 是否有基坑工程：是 / 否
+	 */
+	private String hasPitWork;
+
+	/**
+	 * 现有基坑数量
+	 */
+	private String pitCount;
+
+	/**
+	 * 基坑深度（m）
+	 */
+	private String pitDepth;
+
+	/**
+	 * 支护形式
+	 */
+	private String pitSupportType;
+
+	/**
+	 * 是否邻近轨道/建筑物/承压水软土：是 / 否
+	 */
+	private String nearSensitiveArea;
+
+	/**
+	 * 监测是否在控：在控 / 超限未处置 / 监测频率不足
+	 */
+	private String monitoringStatus;
+
+	/**
+	 * 预警处置情况说明
+	 */
+	private String warningHandling;
 
 	public Integer getSeq() {
 		return seq;
@@ -441,6 +518,126 @@ public class MunicipalProjectVo implements Serializable {
 
 	public void setRiskPoint(String riskPoint) {
 		this.riskPoint = riskPoint;
+	}
+
+	public String getEngineeringCategory() {
+		return engineeringCategory;
+	}
+
+	public void setEngineeringCategory(String engineeringCategory) {
+		this.engineeringCategory = engineeringCategory;
+	}
+
+	public String getDangerBasicInfo() {
+		return dangerBasicInfo;
+	}
+
+	public void setDangerBasicInfo(String dangerBasicInfo) {
+		this.dangerBasicInfo = dangerBasicInfo;
+	}
+
+	public String getDangerCount() {
+		return dangerCount;
+	}
+
+	public void setDangerCount(String dangerCount) {
+		this.dangerCount = dangerCount;
+	}
+
+	public String getSuperDangerCount() {
+		return superDangerCount;
+	}
+
+	public void setSuperDangerCount(String superDangerCount) {
+		this.superDangerCount = superDangerCount;
+	}
+
+	public String getDangerNames() {
+		return dangerNames;
+	}
+
+	public void setDangerNames(String dangerNames) {
+		this.dangerNames = dangerNames;
+	}
+
+	public String getSpecialPlanReview() {
+		return specialPlanReview;
+	}
+
+	public void setSpecialPlanReview(String specialPlanReview) {
+		this.specialPlanReview = specialPlanReview;
+	}
+
+	public String getSiteControlStatus() {
+		return siteControlStatus;
+	}
+
+	public void setSiteControlStatus(String siteControlStatus) {
+		this.siteControlStatus = siteControlStatus;
+	}
+
+	public String getAcceptanceStatus() {
+		return acceptanceStatus;
+	}
+
+	public void setAcceptanceStatus(String acceptanceStatus) {
+		this.acceptanceStatus = acceptanceStatus;
+	}
+
+	public String getHasPitWork() {
+		return hasPitWork;
+	}
+
+	public void setHasPitWork(String hasPitWork) {
+		this.hasPitWork = hasPitWork;
+	}
+
+	public String getPitCount() {
+		return pitCount;
+	}
+
+	public void setPitCount(String pitCount) {
+		this.pitCount = pitCount;
+	}
+
+	public String getPitDepth() {
+		return pitDepth;
+	}
+
+	public void setPitDepth(String pitDepth) {
+		this.pitDepth = pitDepth;
+	}
+
+	public String getPitSupportType() {
+		return pitSupportType;
+	}
+
+	public void setPitSupportType(String pitSupportType) {
+		this.pitSupportType = pitSupportType;
+	}
+
+	public String getNearSensitiveArea() {
+		return nearSensitiveArea;
+	}
+
+	public void setNearSensitiveArea(String nearSensitiveArea) {
+		this.nearSensitiveArea = nearSensitiveArea;
+	}
+
+	public String getMonitoringStatus() {
+		return monitoringStatus;
+	}
+
+	public void setMonitoringStatus(String monitoringStatus) {
+		this.monitoringStatus = monitoringStatus;
+	}
+
+	public String getWarningHandling() {
+		return warningHandling;
+	}
+
+	public void setWarningHandling(String warningHandling) {
+		this.warningHandling = warningHandling;
 	}
 
 }
