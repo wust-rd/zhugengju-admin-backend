@@ -52,12 +52,12 @@ server:
 
 # 数据库连接
 jdbc:
-  # 达梦数据库配置（局方开发库）
+  # 154中间库
   type: dameng
   driver: dm.jdbc.driver.DmDriver
-  url: jdbc:dm://192.168.100.241/ONEMAP_FANGZHEN_DEV?schema=ONEMAP_FANGZHEN_DEV
-  username: ONEMAP_FANGZHEN_DEV
-  password: ONEMAP@1234a
+  url: jdbc:dm://192.168.101.154:5326/YZT?schema=YZT
+  username: YZT
+  password: YZT_sdike82s
   testSql: SELECT 1 FROM DUAL
 
   # 武汉政务云
