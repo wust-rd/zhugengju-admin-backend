@@ -53,20 +53,20 @@ server:
 # 数据库连接
 jdbc:
   # 154中间库
-  type: dameng
-  driver: dm.jdbc.driver.DmDriver
-  url: jdbc:dm://192.168.101.154:5326/YZT?schema=YZT
-  username: YZT
-  password: YZT_sdike82s
-  testSql: SELECT 1 FROM DUAL
-
-  # 武汉政务云
   # type: dameng
   # driver: dm.jdbc.driver.DmDriver
-  # url: jdbc:dm://10.13.31.135:5236/DIGITAL_ZHUGENG_DEV?schema=DIGITAL_ZHUGENG_DEV
-  # username: csgx_xk
-  # password: xscKms938s
+  # url: jdbc:dm://192.168.101.154:5326/YZT?schema=YZT
+  # username: YZT
+  # password: YZT_sdike82s
   # testSql: SELECT 1 FROM DUAL
+
+  # 武汉政务云
+  type: dameng
+  driver: dm.jdbc.driver.DmDriver
+  url: jdbc:dm://10.13.31.135:5236/DIGITAL_ZHUGENG_DEV?schema=DIGITAL_ZHUGENG_DEV
+  username: csgx_xk
+  password: xscKms938s
+  testSql: SELECT 1 FROM DUAL
 
   # 多数据源：工地库（ZHGD_2，只读查询，账号 read_all 本身仅具 SELECT 权限，
   # 应用层也严禁向该数据源写入：只允许把查询类 Dao 指定到此数据源）
