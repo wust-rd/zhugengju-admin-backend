@@ -101,6 +101,13 @@
 			<version>${project.parent.version}</version>
 		</dependency>
 
+		<!-- 市政基础设施项目填报系统模块 -->
+		<dependency>
+			<groupId>com.jeesite</groupId>
+			<artifactId>jeesite-module-onemap02fill</artifactId>
+			<version>${project.parent.version}</version>
+		</dependency>
+
 		<!-- 热部署工具
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
