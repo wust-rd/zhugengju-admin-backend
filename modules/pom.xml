@@ -20,6 +20,7 @@
 		<module>core/static</module>
 		<module>gongdi</module>
 		<module>onemap_02-fill</module>
+		<module>onemap_04-fill</module>
 		<module>qa</module>
 		<module>test</module>
 	</modules>

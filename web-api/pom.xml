@@ -107,6 +107,11 @@
 			<artifactId>jeesite-module-onemap02fill</artifactId>
 			<version>${project.parent.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>com.jeesite</groupId>
+			<artifactId>jeesite-module-onemap04fill</artifactId>
+			<version>${project.parent.version}</version>
+		</dependency>
 
 		<!-- 热部署工具
 		<dependency>
