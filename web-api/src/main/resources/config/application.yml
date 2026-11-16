@@ -68,46 +68,9 @@ jdbc:
   password: xscKms938s
   testSql: SELECT 1 FROM DUAL
 
-  # 多数据源：工地库（ZHGD_2，只读查询，账号 read_all 本身仅具 SELECT 权限，
-  # 应用层也严禁向该数据源写入：只允许把查询类 Dao 指定到此数据源）
-  dataSourceNames: gongdi, xmxxdj
-  gongdi:
-    type: dameng
-    driver: dm.jdbc.driver.DmDriver
-    url: jdbc:dm://10.13.28.237:5236/ZHGD_2?schema=ZHGD_2
-    username: read_all
-    password: Read@123456
-    testSql: SELECT 1 FROM DUAL
-    # 连接池调小即可（只做查询，负载很低）
-    # init/minIdle 必须为 0：工地库是辅助只读数据源，采用懒加载，
-    # 否则它一旦不可用（网络不通/实例重启），Druid 初始化失败会直接导致整个服务启动失败
-    pool:
-      init: 0
-      minIdle: 0
-      maxActive: 10
-      maxWait: 10000
-
-  # 多数据源：项目信息登记库（XMXXDJ，只读查询，与工地库同一实例不同 schema）
-  # 市政项目基本信息接口从这里取工程与责任主体，同样只读，禁止写操作
-  xmxxdj:
-    type: dameng
-    driver: dm.jdbc.driver.DmDriver
-    url: jdbc:dm://10.13.28.237:5236/XMXXDJ?schema=XMXXDJ
-    username: read_all
-    password: Read@123456
-    testSql: SELECT 1 FROM DUAL
-    # 同 gongdi：懒加载，登记库不可用时不拖垮服务启动
-    pool:
-      init: 0
-      minIdle: 0
-      maxActive: 10
-      maxWait: 10000
-
   # Dao 与数据源映射
   # 用法一：在映射里按包/类指定，如  com.jeesite.modules.xxx.dao. = 数据源名
   # 用法二：在 Dao 上加 @MyBatisDao(dataSourceName="数据源名")，优先于包级映射
-  # 说明：gongdi 包下两个 Dao 走不同数据源（工地库 / 登记库），
-  # 统一靠 @MyBatisDao(dataSourceName) 注解区分，这里不再写包级映射
   mybatisDaoAndDataSourceMappings: |
 
   #  # Oracle 数据库配置
@@ -1088,16 +1051,3 @@ msg:
 #========== Project settings ==========#
 #======================================#
 
-#======================================#
-#==== 工地环境监测（噪声扬尘）开放接口 ====#
-#======================================#
-gongdi-env:
-  # 查询的项目ID（英文逗号分隔），共 34 个
-  # 前 10 个为原配置，后 24 个来自《1029 市政基础设施应用场景首批项目清单》
-  # 明细数据按项目分表，表名为 Z_ENVIRONMENTAL_RECORD_{项目ID}
-  # 其中 649546 / 649543 / 649545 / 632507 在工地库没有挂任何设备，运行时会自动过滤
-  project-ids: 635320,644423,632474,636613,650154,636685,635686,632472,636927,635418,632607,633127,633242,634478,634087,633228,635712,635857,632744,634595,633977,633657,633375,635723,636500,636464,632413,647276,635459,649546,649543,636827,649545,632507
-
-  # 已停报设备ID（英文逗号分隔）：这些设备仍挂在对应项目下，但最后一次上报距今已久
-  # 清空本项即恢复全部查询，无需改代码。
-  exclude-device-ids: 722354,741027,746257,828052,742808,723548,724148,723331,724150,726403,724147,724151,726585,726993,727307,726997,741841,744461,756883,726994,726391,746855,746856
