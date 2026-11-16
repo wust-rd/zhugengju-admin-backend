@@ -601,8 +601,9 @@ public class OmFillService {
 		List<OmHazard> hazards = hazardList(projectId);
 		List<OmPit> pits = pitList(projectId);
 		ObjectNode review = (ObjectNode) OmScoreEngine.toJsonNode(p.getReviewJson());
+		// 与原型一致：无已保存评分时进入评分页为「空勾选」，由评分人按实际勾选
 		if (review == null || !review.isObject() || !review.has("haz")) {
-			review = OmScoreEngine.autoSelections(p, hazards, pits);
+			review = OmScoreEngine.emptySelections(p.getCat());
 		}
 		Map<String, Object> m = new LinkedHashMap<>();
 		m.put("projectId", projectId);
@@ -756,6 +757,7 @@ public class OmFillService {
 		List<Map<String, Object>> views = all.stream().map(this::projectView).collect(Collectors.toList());
 		int allCount = views.size();
 		long building = views.stream().filter(v -> "在建".equals(v.get("buildStatus"))).count();
+		long stopBuilding = views.stream().filter(v -> "停工".equals(v.get("buildStatus"))).count();
 		long hazardSum = views.stream().mapToLong(v -> ((Number) v.get("hazardTotal")).longValue()).sum();
 		long hazardSup = views.stream().mapToLong(v -> ((Number) v.get("hazardSup")).longValue()).sum();
 		long red = views.stream().filter(v -> "1".equals(String.valueOf(v.get("riskLevel")))).count();
@@ -763,6 +765,7 @@ public class OmFillService {
 		Map<String, Object> m = new LinkedHashMap<>();
 		m.put("projectCount", allCount);
 		m.put("buildingCount", building);
+		m.put("stopBuildingCount", stopBuilding);
 		m.put("hazardTotal", hazardSum);
 		m.put("hazardSup", hazardSup);
 		m.put("redCount", red);
