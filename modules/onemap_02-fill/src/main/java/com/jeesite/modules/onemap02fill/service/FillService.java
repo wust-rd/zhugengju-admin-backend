@@ -48,9 +48,11 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -370,16 +372,20 @@ public class FillService {
 		for (FillNode n : nodes) {
 			FillNodeFb fb = fbMap.get(n.getId());
 			List<FillFile> files = new ArrayList<>();
+			List<FillFile> preFiles = new ArrayList<>();
+			List<FillFile> fbFiles = new ArrayList<>();
 			if (fileMap.containsKey("pre:" + n.getId())) {
-				files.addAll(fileMap.get("pre:" + n.getId()));
+				preFiles.addAll(fileMap.get("pre:" + n.getId()));
+				files.addAll(preFiles);
 			}
 			if (fileMap.containsKey("node:" + n.getId())) {
 				files.addAll(fileMap.get("node:" + n.getId()));
 			}
 			if (fb != null && fileMap.containsKey("node_fb:" + n.getId())) {
-				files.addAll(fileMap.get("node_fb:" + n.getId()));
+				fbFiles.addAll(fileMap.get("node_fb:" + n.getId()));
+				files.addAll(fbFiles);
 			}
-			list.add(nodeMap(n, fb, files));
+			list.add(nodeMap(n, fb, files, preFiles, fbFiles));
 		}
 		return list;
 	}
@@ -528,7 +534,6 @@ public class FillService {
 			fb.setUpdateBy(operator);
 			fb.setIsNewRecord(true);
 		} else {
-			deleteFiles("node_fb", fb.getId());
 			fb.setUpdateBy(operator);
 		}
 		fb.setFbDate(FillUtils.toDate(FillUtils.parseDay(fbDate)));
@@ -542,7 +547,7 @@ public class FillService {
 		} else {
 			fillNodeFbDao.update(fb);
 		}
-		attachFiles("node_fb", fb.getId(), node.getProjectId(), operator, list(form.get("files")));
+		syncFiles("node_fb", fb.getId(), node.getProjectId(), operator, list(form.get("files")));
 		// 形象进度联动：节点反馈完成时按节点权重刷新项目形象进度
 		updateProjectProgress(node.getProjectId());
 	}
@@ -576,8 +581,7 @@ public class FillService {
 		node.setUpdateBy(operator(role));
 		fillNodeDao.update(node);
 
-		deleteFiles("pre", nodeId);
-		attachFiles("pre", nodeId, node.getProjectId(), operator(role), list(form.get("files")));
+		syncFiles("pre", nodeId, node.getProjectId(), operator(role), list(form.get("files")));
 
 		String now = String.valueOf(node.getPlanDate()) + "|" + String.valueOf(node.getActDate()) + "|" + node.getDocNo();
 		if (!StringUtils.equals(old, now)) {
@@ -1188,9 +1192,10 @@ public class FillService {
 			todo.addAll(todoSups);
 			todo.addAll(todoIssues);
 		} else {
+			// 住更局待办仅纳入超期未反馈节点（与原型 viewDashboard 口径一致）
 			todo.addAll(todoIssues);
 			todo.addAll(todoSups);
-			todo.addAll(todoNodes);
+			todoNodes.stream().filter(m -> "danger".equals(m.get("st"))).forEach(todo::add);
 		}
 		todo.sort(Comparator.comparing(m -> sev(m.get("st"))));
 
@@ -1233,6 +1238,13 @@ public class FillService {
 		data.put("todoIssues", todoIssues);
 		data.put("todo", todo);
 		data.put("lateNodeCount", todoNodes.stream().filter(m -> "danger".equals(m.get("st"))).count());
+		// 累计协调事项（全市项目），与原型「累计 N 件」口径一致
+		data.put("issueTotal", allIssues.size());
+		// 待办角标：建设单位 = 节点待填报 + 督办待回复；住更局 = 督办待跟踪 + 协调待受理 + 超期节点
+		data.put("workCount", owner
+			? todoNodes.size() + todoSups.size()
+			: todoSups.size() + todoIssues.size()
+				+ todoNodes.stream().filter(m -> "danger".equals(m.get("st"))).count());
 		data.put("focus", focus);
 		data.put("syncStatus", syncStatus());
 		return data;
@@ -1435,7 +1447,7 @@ public class FillService {
 	}
 
 	/**
-	 * 批量创建附件记录
+	 * 批量创建 / 更新附件记录（按文件 id 幂等：已存在则更新归属与元数据）
 	 */
 	private void attachFiles(String bizType, String bizId, String projectId, String operator, List<Map<String, Object>> files) {
 		if (files == null || files.isEmpty()) {
@@ -1446,8 +1458,12 @@ public class FillService {
 			if (StringUtils.isBlank(id)) {
 				continue;
 			}
-			FillFile e = new FillFile();
-			e.setId(id);
+			FillFile e = fillFileDao.get(new FillFile(id));
+			boolean isNew = e == null;
+			if (isNew) {
+				e = new FillFile();
+				e.setId(id);
+			}
 			e.setProjectId(projectId);
 			e.setBizType(bizType);
 			e.setBizId(bizId);
@@ -1456,15 +1472,47 @@ public class FillService {
 			e.setFileExt(ext);
 			e.setFileSize(f.get("size") == null ? 0L : Long.parseLong(String.valueOf(f.get("size"))));
 			e.setFileKind(StringUtils.defaultIfBlank(str(f.get("kind")), FillUtils.kindOf(ext)));
-			e.setFilePath("fill/" + java.time.LocalDate.now().format(java.time.format.DateTimeFormatter.ofPattern("yyyyMM"))
-				+ "/" + id + "." + StringUtils.defaultIfBlank(ext, "bin"));
+			if (isNew) {
+				e.setFilePath("fill/" + java.time.LocalDate.now().format(java.time.format.DateTimeFormatter.ofPattern("yyyyMM"))
+					+ "/" + id + "." + StringUtils.defaultIfBlank(ext, "bin"));
+			}
 			e.setFileUrl(fileUrl(id));
 			e.setUploadBy(operator);
 			e.setUploadDate(FillUtils.toDate(FillUtils.today()));
 			e.setUpdateBy(operator);
-			e.setIsNewRecord(true);
-			fillFileDao.insert(e);
+			if (isNew) {
+				e.setIsNewRecord(true);
+				fillFileDao.insert(e);
+			} else {
+				fillFileDao.update(e);
+			}
 		}
+	}
+
+	/**
+	 * 全量同步附件：保留本次提交的文件（按 id），删除其余旧附件
+	 * <p>用于「编辑反馈 / 修正前期审批」场景，避免未重新上传的原附件被误删。
+	 */
+	private void syncFiles(String bizType, String bizId, String projectId, String operator, List<Map<String, Object>> files) {
+		FillFile where = new FillFile();
+		where.setBizType(bizType);
+		where.setBizId(bizId);
+		List<FillFile> existing = fillFileDao.findList(where);
+		Set<String> keep = new HashSet<>();
+		if (files != null) {
+			for (Map<String, Object> f : files) {
+				String id = str(f.get("id"));
+				if (StringUtils.isNotBlank(id)) {
+					keep.add(id);
+				}
+			}
+		}
+		for (FillFile e : existing) {
+			if (!keep.contains(e.getId())) {
+				fillFileDao.delete(e);
+			}
+		}
+		attachFiles(bizType, bizId, projectId, operator, files);
 	}
 
 	private void deleteFiles(String bizType, String bizId) {
@@ -1515,7 +1563,8 @@ public class FillService {
 		return m;
 	}
 
-	private Map<String, Object> nodeMap(FillNode n, FillNodeFb fb, List<FillFile> files) {
+	private Map<String, Object> nodeMap(FillNode n, FillNodeFb fb, List<FillFile> files,
+			List<FillFile> preFiles, List<FillFile> fbFiles) {
 		Map<String, Object> m = new LinkedHashMap<>();
 		m.put("id", n.getId());
 		m.put("projectId", n.getProjectId());
@@ -1533,12 +1582,14 @@ public class FillService {
 		m.put("source", StringUtils.trim(n.getSource()));
 		String st = FillConstants.STAGE_PRE.equals(n.getStage()) ? preStatus(n) : nodeStatus(n, fb, FillUtils.today());
 		m.put("status", st);
-		m.put("fb", fb == null ? null : nodeFbMap(fb));
+		m.put("fb", fb == null ? null : nodeFbMap(fb, fbFiles));
 		m.put("files", fileMaps(files));
+		m.put("preFiles", fileMaps(preFiles));
+		m.put("fbFiles", fileMaps(fbFiles));
 		return m;
 	}
 
-	private Map<String, Object> nodeFbMap(FillNodeFb fb) {
+	private Map<String, Object> nodeFbMap(FillNodeFb fb, List<FillFile> fbFiles) {
 		Map<String, Object> m = new LinkedHashMap<>();
 		m.put("id", fb.getId());
 		m.put("nodeId", fb.getNodeId());
@@ -1548,6 +1599,7 @@ public class FillService {
 		m.put("fbText", fb.getFbText());
 		m.put("fbBy", fb.getFbBy());
 		m.put("fbTime", fb.getFbTime() == null ? null : FillUtils.fmtDateTime(fb.getFbTime()));
+		m.put("files", fileMaps(fbFiles));
 		return m;
 	}
 
