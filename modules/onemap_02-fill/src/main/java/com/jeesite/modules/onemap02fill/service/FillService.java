@@ -381,8 +381,8 @@ public class FillService {
 			if (fileMap.containsKey("node:" + n.getId())) {
 				files.addAll(fileMap.get("node:" + n.getId()));
 			}
-			if (fb != null && fileMap.containsKey("node_fb:" + n.getId())) {
-				fbFiles.addAll(fileMap.get("node_fb:" + n.getId()));
+			if (fb != null && fileMap.containsKey("node_fb:" + fb.getId())) {
+				fbFiles.addAll(fileMap.get("node_fb:" + fb.getId()));
 				files.addAll(fbFiles);
 			}
 			list.add(nodeMap(n, fb, files, preFiles, fbFiles));
