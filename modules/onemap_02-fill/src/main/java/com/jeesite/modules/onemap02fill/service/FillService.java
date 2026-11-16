@@ -872,14 +872,29 @@ public class FillService {
 			throw new IllegalArgumentException("请填写整改回复内容");
 		}
 		String operator = operator(role);
-		FillSupReply r = new FillSupReply();
-		r.setSupId(supId);
+		FillSupReply where = new FillSupReply();
+		where.setSupId(supId);
+		List<FillSupReply> exists = fillSupReplyDao.findList(where);
+		FillSupReply r;
+		if (exists.isEmpty()) {
+			r = new FillSupReply();
+			r.setSupId(supId);
+			r.setUpdateBy(operator);
+			r.setIsNewRecord(true);
+		} else {
+			// 已有回复则覆盖更新，避免重复回复产生多条记录
+			r = exists.get(0);
+			deleteFiles("sup_reply", r.getId());
+			r.setUpdateBy(operator);
+		}
 		r.setReplyDate(FillUtils.toDate(FillUtils.today()));
 		r.setReplyBy(operator);
 		r.setReplyText(text);
-		r.setUpdateBy(operator);
-		r.setIsNewRecord(true);
-		fillSupReplyDao.insert(r);
+		if (r.getIsNewRecord()) {
+			fillSupReplyDao.insert(r);
+		} else {
+			fillSupReplyDao.update(r);
+		}
 		attachFiles("sup_reply", r.getId(), x.getProjectId(), operator, list(form.get("files")));
 
 		x.setSupStatus("已回复");
