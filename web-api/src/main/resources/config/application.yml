@@ -21,7 +21,7 @@ apiMode: true
 #======================================#
 
 server:
-  port: 5182
+  port: 7778
   servlet:
     context-path: /js
     register-default-servlet: false
