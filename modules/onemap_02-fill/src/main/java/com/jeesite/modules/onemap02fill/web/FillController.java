@@ -21,9 +21,10 @@ import java.util.Map;
 import java.util.function.Supplier;
 
 /**
- * 市政基础设施项目填报系统开放接口
+ * 市政基础设施项目填报系统接口
  * <p>
- * 【免登录】路径不在 adminPath（/a）之下，命中 shiro 过滤器链 {@code /** = anon}：
+ * 【需登录】shiro 过滤器链 {@code /api/fill/** = user}，未登录访问返回
+ * {@code {"result":"login"}}，前端据此跳转登录页：
  * <pre>
  *   GET  http://127.0.0.1:5182/js/api/fill/project/list
  *   POST http://127.0.0.1:5182/js/api/fill/node/fb/save

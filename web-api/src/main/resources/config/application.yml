@@ -3,7 +3,7 @@
 #======================================#
 
 # 产品或项目名称、软件开发公司名称
-productName: JeeSite Demo
+productName: 数字住更填报系统
 companyName: ThinkGem
 
 # 产品版本、版权年份
@@ -725,8 +725,8 @@ shiro:
   # URI 权限过滤器定义（自定义添加参数时，请不要移除 ${adminPath}/** = user，否则会导致权限异常）
   # 提示：填写过滤规则，请注意先后顺序，从上到下，先匹配先受用规则，匹配成功后不再继续匹配。
   filterChainDefinitions: |
-    /api/env/** = anon
-    /api/muni/** = anon
+    /api/fill/** = user
+    /api/safetyfill/** = user
     ${adminPath}/** = user
     /** = anon
 
@@ -1050,4 +1050,3 @@ msg:
 #======================================#
 #========== Project settings ==========#
 #======================================#
-
