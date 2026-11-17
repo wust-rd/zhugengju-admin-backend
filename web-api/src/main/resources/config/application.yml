@@ -63,63 +63,15 @@ jdbc:
   # 武汉政务云
   type: dameng
   driver: dm.jdbc.driver.DmDriver
-  url: jdbc:dm://10.13.31.135:5236/DIGITAL_ZHUGENG_DEV?schema=DIGITAL_ZHUGENG_DEV
-  username: csgx_xk
-  password: xscKms938s
+  url: jdbc:dm://192.168.100.241/ONEMAP_FANGZHEN_DEV?schema=ONEMAP_FANGZHEN_DEV
+  username: ONEMAP_FANGZHEN_DEV
+  password: ONEMAP@1234a
   testSql: SELECT 1 FROM DUAL
 
   # Dao 与数据源映射
   # 用法一：在映射里按包/类指定，如  com.jeesite.modules.xxx.dao. = 数据源名
   # 用法二：在 Dao 上加 @MyBatisDao(dataSourceName="数据源名")，优先于包级映射
   mybatisDaoAndDataSourceMappings: |
-
-  #  # Oracle 数据库配置
-  #  type: oracle
-  #  driver: oracle.jdbc.OracleDriver
-  #  url: jdbc:oracle:thin:@127.0.0.1:1521/orcl
-  #  username: jeesite
-  #  password: jeesite
-  #  testSql: SELECT 1 FROM DUAL
-
-  #  # Sql Server 数据库配置（2008 版本，请打开 /modules/core/pom.xml 文件，替换为 SqlServer 2008 驱动并编译打包 core 模块）
-  #  type: mssql
-  #  driver: net.sourceforge.jtds.jdbc.Driver
-  #  url: jdbc:jtds:sqlserver://127.0.0.1:1433/jeesite
-  #  username: jeesite
-  #  password: jeesite
-  #  testSql: SELECT 1
-
-  #  # Sql Server 数据库配置（2012 及以上版本，请打开 /modules/core/pom.xml 文件，替换为 SqlServer 2021 驱动并编译打包 core 模块）
-  #  type: mssql2012
-  #  driver: com.microsoft.sqlserver.jdbc.SQLServerDriver
-  #  url: jdbc:sqlserver://127.0.0.1:1433;DatabaseName=jeesite;encrypt=true;trustServerCertificate=true
-  #  username: jeesite
-  #  password: jeesite
-  #  testSql: SELECT 1
-
-  #  # PostgreSql 数据库配置
-  #  type: postgresql
-  #  driver: org.postgresql.Driver
-  #  url: jdbc:postgresql://127.0.0.1:5432/jeesite
-  #  username: jeesite
-  #  password: jeesite
-  #  testSql: SELECT 1
-
-  #  # 人大金仓数据库配置
-  #  type: kingbase
-  #  driver: com.kingbase8.Driver
-  #  url: jdbc:kingbase8://127.0.0.1:54321/jeesite?currentSchema=jeesite&UseServerPrepare=false
-  #  username: jeesite
-  #  password: jeesite
-  #  testSql: SELECT 1 FROM DUAL
-
-  #  # H2 数据库配置（请打开 /modules/core/pom.xml 文件，打开 H2 DB 驱动并编译打包 core 模块）
-  #  type: h2
-  #  driver: org.h2.Driver
-  #  url: jdbc:h2:~/jeesite-db/jeesite
-  #  username: jeesite
-  #  password: jeesite
-  #  testSql: SELECT 1
 
   # 更多数据库的支持列表：
   # https://jeesite.com/docs/technology/#%E4%B8%83%E3%80%81%E5%B7%B2%E6%94%AF%E6%8C%81%E6%95%B0%E6%8D%AE%E5%BA%93
